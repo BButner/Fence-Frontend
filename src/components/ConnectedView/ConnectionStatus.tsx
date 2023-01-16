@@ -3,15 +3,34 @@ import clsx from "clsx"
 import { useAtomValue } from "jotai"
 
 import { connectionAtom, ConnectionState } from "../../lib/state"
+import styles from "./ConnectionStatus.module.scss"
 
 export const ConnectionStatus: React.FC = () => {
   const connectionState = useAtomValue(connectionAtom)
 
+  const cleanHostname = (hostname: string) => {
+    const url = new URL(hostname)
+    return url.hostname
+  }
+
   return (
-    <div className="fixed bottom-4 left-4 overflow-hidden rounded shadow-xl">
+    <button
+      className={clsx(
+        styles.connectionStatusButton,
+        "fixed bottom-4 left-4 flex items-center overflow-hidden rounded p-0 shadow-xl",
+        connectionState.connectionState === ConnectionState.Connected &&
+          " bg-green-200 text-green-900",
+        connectionState.connectionState === ConnectionState.Connected &&
+          styles.connectionStatusButtonConnected,
+        connectionState.connectionState === ConnectionState.Connecting &&
+          "bg-yellow-200 text-yellow-900",
+        connectionState.connectionState === ConnectionState.Disconnected &&
+          "bg-red-200 text-red-900",
+      )}
+    >
       <div
         className={clsx(
-          "flex items-center p-2",
+          "p-2",
           connectionState.connectionState === ConnectionState.Connected &&
             "bg-green-400 text-green-900",
           connectionState.connectionState === ConnectionState.Connecting &&
@@ -30,6 +49,18 @@ export const ConnectionStatus: React.FC = () => {
           <BoltSlashIcon className="h-4 w-4" />
         )}
       </div>
-    </div>
+      <p className="m-0 px-2 text-sm font-semibold uppercase">
+        {cleanHostname(connectionState.hostname)}
+      </p>
+
+      <div
+        className={clsx(
+          "absolute top-0 left-0 m-0 flex h-full w-full items-center justify-center bg-red-400 p-0 text-white",
+          styles.disconnect,
+        )}
+      >
+        <p className="m-0 p-0 text-sm font-semibold">Disconnect</p>
+      </div>
+    </button>
   )
 }
