@@ -1,6 +1,7 @@
 import { motion } from "framer-motion"
 
 import { ConnectionStatus } from "./ConnectedView/ConnectionStatus"
+import { SettingsView } from "./ConnectedView/SettingsView"
 
 export const ConnectedView: React.FC = () => {
   // TODO:
@@ -22,6 +23,7 @@ export const ConnectedView: React.FC = () => {
       exit={{ opacity: 0 }}
     >
       <ConnectionStatus />
+      <SettingsView />
     </motion.div>
   )
 }
