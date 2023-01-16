@@ -21,7 +21,7 @@ pub async fn connect_client(
 
     return match client {
         Ok(client) => {
-            app_handle.emit_all("grpc-connected", {});
+            app_handle.emit_all("grpc-connected", { hostname });
             println!("connected");
 
             let clone = client.clone();

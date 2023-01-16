@@ -1,6 +1,8 @@
 import { motion } from "framer-motion"
 
-export const Connected: React.FC = () => {
+import { ConnectionStatus } from "./ConnectedView/ConnectionStatus"
+
+export const ConnectedView: React.FC = () => {
   // TODO:
   // implement the styling from Alphas repo
   // monitors in the middle
@@ -19,8 +21,7 @@ export const Connected: React.FC = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <div className="w-screen flex-1"></div>
-      <div className="h-6 w-screen"></div>
+      <ConnectionStatus />
     </motion.div>
   )
 }
