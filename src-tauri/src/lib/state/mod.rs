@@ -10,4 +10,5 @@ pub struct FenceState(pub Mutex<State>);
 pub struct State {
     pub config: Option<ConfigResponse>,
     pub grpc: Option<FenceManagerClient<Channel>>,
+    pub grpc_hostname: Option<String>,
 }

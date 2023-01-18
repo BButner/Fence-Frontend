@@ -3,7 +3,7 @@ use std::sync::MutexGuard;
 use tauri::{AppHandle, Manager};
 use tonic::transport::{channel, Channel};
 
-use self::fence::fence_manager_client::FenceManagerClient;
+use self::fence::{fence_manager_client::FenceManagerClient, ConfigResponse};
 
 use super::state::{FenceState, State};
 
@@ -32,7 +32,7 @@ pub async fn connect_client(
                 }
 
                 LOOP_HANDLE = Some(tokio::task::spawn(async move {
-                    start_mouse_listener(&mut client.clone()).await;
+                    start_mouse_listener(&mut client.clone(), app_handle.clone()).await;
                     app_handle.emit_all("grpc-disconnected", {});
                     println!("disconnected");
                 }));
@@ -48,7 +48,15 @@ pub async fn connect_client(
     };
 }
 
-async fn start_mouse_listener(client: &mut FenceManagerClient<Channel>) {
+pub async fn load_config(
+    client: &mut FenceManagerClient<Channel>,
+) -> Result<ConfigResponse, Box<dyn std::error::Error>> {
+    let config = client.get_config(()).await?;
+
+    Ok(config.into_inner())
+}
+
+async fn start_mouse_listener(client: &mut FenceManagerClient<Channel>, app_handle: AppHandle) {
     let stream_result = client.get_cursor_location_stream(()).await;
 
     match stream_result {
@@ -64,7 +72,7 @@ async fn start_mouse_listener(client: &mut FenceManagerClient<Channel>) {
                             break;
                         }
 
-                        println!("wat {:?}", message);
+                        app_handle.emit_all("mouse-location", message.unwrap());
                     }
                     Err(e) => println!("message err {:?}", e),
                 }

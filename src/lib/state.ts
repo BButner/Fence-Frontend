@@ -1,5 +1,7 @@
 import { atom } from "jotai"
 
+import { IConfigResponse } from "./config"
+
 export enum ConnectionState {
   InitialConnection = "InitialConnection",
   Connecting = "Connecting",
@@ -18,3 +20,5 @@ export const connectionAtom = atom<IConnectionState>({
   initialConnection: true,
   hostname: "",
 })
+
+export const configAtom = atom<IConfigResponse | null>(null)

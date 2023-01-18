@@ -1,6 +1,7 @@
 import { motion } from "framer-motion"
 
 import { ConnectionStatus } from "./ConnectedView/ConnectionStatus"
+import { MonitorView } from "./ConnectedView/MonitorView"
 import { SettingsView } from "./ConnectedView/SettingsView"
 
 export const ConnectedView: React.FC = () => {
@@ -17,13 +18,15 @@ export const ConnectedView: React.FC = () => {
   return (
     <motion.div
       key="connected"
-      className="flex h-full w-full  flex-col items-center"
+      className="flex h-full w-full flex-col items-center justify-center"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
       <ConnectionStatus />
       <SettingsView />
+
+      <MonitorView />
     </motion.div>
   )
 }

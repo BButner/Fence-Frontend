@@ -1,15 +1,17 @@
 import BoltIcon from "@heroicons/react/24/solid/BoltIcon"
 import { UnlistenFn } from "@tauri-apps/api/event"
 import { motion } from "framer-motion"
-import { useAtom } from "jotai"
+import { useAtom, useSetAtom } from "jotai"
 import { useEffect, useState } from "react"
 
+import { IConfigResponse } from "../lib/config"
 import { FenceEvent } from "../lib/event"
-import { connectionAtom, ConnectionState } from "../lib/state"
+import { configAtom, connectionAtom, ConnectionState } from "../lib/state"
 import { invoke, listen } from "../lib/tauri"
 
 export const ConnectionSplashScreen: React.FC = () => {
   const [connectionState, setConnectionState] = useAtom(connectionAtom)
+  const [config, setConfig] = useAtom(configAtom)
 
   let unlistenConnected: UnlistenFn | null = null
   let unlistenDisconnected: UnlistenFn | null = null
@@ -45,9 +47,14 @@ export const ConnectionSplashScreen: React.FC = () => {
       connectionState: ConnectionState.Connecting,
     })
 
-    void invoke("test_connect", { hostname: connectionState.hostname }).then((res) => {
-      // if (res) {
-      // }
+    void invoke("connect_grpc", { hostname: connectionState.hostname }).then((res) => {
+      if (res) {
+        void invoke("get_config").then((response) => {
+          if (response) {
+            setConfig(response)
+          }
+        })
+      }
     })
   }
 
