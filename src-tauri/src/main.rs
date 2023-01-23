@@ -9,7 +9,7 @@ use lib::{
 };
 use tauri::{async_runtime::Mutex, Manager};
 
-use crate::lib::commands::{connect_grpc, get_config};
+use crate::lib::commands::{connect_grpc, get_config, get_state};
 
 pub mod lib;
 
@@ -23,7 +23,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     tauri::Builder::default()
         .manage(state)
-        .invoke_handler(tauri::generate_handler![connect_grpc, get_config])
+        .invoke_handler(tauri::generate_handler![
+            connect_grpc,
+            get_config,
+            get_state
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 

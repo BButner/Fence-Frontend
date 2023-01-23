@@ -12,3 +12,9 @@ pub struct State {
     pub grpc: Option<FenceManagerClient<Channel>>,
     pub grpc_hostname: Option<String>,
 }
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct StateResponse {
+    #[serde(rename(serialize = "grpcHostname"))]
+    pub grpc_hostname: Option<String>,
+}

@@ -1,12 +1,28 @@
 import { AnimatePresence } from "framer-motion"
-import { useAtomValue } from "jotai"
+import { useAtom } from "jotai"
+import { useEffect } from "react"
 
 import { ConnectedView } from "../components/ConnectedView"
 import { ConnectionSplashScreen } from "../components/ConnectionSplashScreen"
+import { getState } from "../lib/fenceState"
 import { connectionAtom, ConnectionState } from "../lib/state"
 
 function App() {
-  const connection = useAtomValue(connectionAtom)
+  const [connection, setConnection] = useAtom(connectionAtom)
+
+  useEffect(() => {
+    void getState().then((state) => {
+      console.log(state)
+      if (state.grpcHostname !== null) {
+        setConnection({
+          ...connection,
+          connectionState: ConnectionState.Connected,
+          hostname: state.grpcHostname,
+        })
+      }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <div className="flex h-screen w-screen items-center justify-center">
