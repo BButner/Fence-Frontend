@@ -21,12 +21,8 @@ pub async fn connect_client(
     app_handle: AppHandle,
 ) -> Option<FenceManagerClient<Channel>> {
     let client_hostname = hostname.clone();
-    // let mut channel = Channel::from_shared(client_hostname)
-    //     .timeout(Duration::from_secs(5))
-    //     .connect()
-    //     .await;
 
-    let mut shared_channel = Channel::from_shared(hostname.to_string());
+    let shared_channel = Channel::from_shared(hostname.to_string());
 
     match shared_channel {
         Ok(channel) => {
@@ -64,17 +60,24 @@ pub async fn connect_client(
                             println!("connected");
 
                             start_heartbeat_listener(&mut heartbeat_client, &app_handle).await;
+
                             &app_handle.emit_all("grpc-disconnected", {});
+
+                            let state = &app_handle.state::<FenceState>();
+                            let mut state = state.0.lock().await;
+                            state.grpc = None;
+                            state.grpc_hostname = None;
+
                             println!("disconnected");
                         }));
                     }
 
-                    return Some(clone);
+                    Some(clone)
                 }
                 Err(e) => {
                     println!("error connecting 1: {:?}", e);
                     println!("{}", e.to_string());
-                    &app_handle.emit_all("grpc-disconnected", {});
+                    &app_handle.emit_all("grpc-connection-failed", {});
                     &app_handle.emit_all(
                         "fence-error",
                         EventFenceError {
@@ -85,58 +88,16 @@ pub async fn connect_client(
                             title: "Error Connecting".to_string(),
                         },
                     );
-                    return None;
+                    None
                 }
             }
         }
         Err(e) => {
             println!("error connecting: {:?}", e);
             println!("{}", e.to_string());
-            return None;
+            None
         }
     }
-
-    // let client = FenceManagerClient::connect(hostname.to_string()).await;
-
-    // return match client {
-    //     Ok(client) => {
-    //         let clone = client.clone();
-    //         let mut heartbeat_client = client.clone();
-    //         let hostname_clone = hostname.clone().to_string();
-    //         let mut app_handle_clone = app_handle.clone();
-
-    //         unsafe {
-    //             if let Some(cursor_loop_handle) = &CURSOR_LOOP_HANDLE {
-    //                 cursor_loop_handle.abort();
-    //             }
-
-    //             if let Some(heartbeat_loop_handle) = &HEARTBEAT_LOOP_HANDLE {
-    //                 heartbeat_loop_handle.abort();
-    //             }
-
-    //             CURSOR_LOOP_HANDLE = Some(tokio::task::spawn(async move {
-    //                 start_mouse_listener(&mut client.clone(), &mut app_handle_clone).await;
-    //             }));
-
-    //             HEARTBEAT_LOOP_HANDLE = Some(tokio::task::spawn(async move {
-    //                 &app_handle.emit_all("grpc-connected", hostname_clone);
-    //                 println!("connected");
-
-    //                 start_heartbeat_listener(&mut heartbeat_client, &app_handle).await;
-    //                 &app_handle.emit_all("grpc-disconnected", {});
-    //                 println!("disconnected");
-    //             }));
-    //         }
-
-    //         Some(clone)
-    //     }
-    //     Err(e) => {
-    //         println!("error connecting: {:?}", e);
-    //         println!("{}", e.to_string());
-    //         return None;
-    //     }
-    // };
-    None
 }
 
 pub async fn load_config(

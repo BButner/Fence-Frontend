@@ -7,6 +7,7 @@ export enum ConnectionState {
   Connecting = "Connecting",
   Connected = "Connected",
   Disconnected = "Disconnected",
+  ConnectionFailed = "ConnectionFailed",
 }
 
 interface IConnectionState {

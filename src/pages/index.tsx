@@ -44,7 +44,8 @@ function App() {
   return (
     <div className="flex h-screen w-screen items-center justify-center">
       <AnimatePresence mode="wait">
-        {connection.connectionState === ConnectionState.InitialConnection && (
+        {(connection.connectionState === ConnectionState.InitialConnection ||
+          connection.connectionState === ConnectionState.ConnectionFailed) && (
           <ConnectionSplashScreen />
         )}
         {connection.connectionState === ConnectionState.Connecting && (
