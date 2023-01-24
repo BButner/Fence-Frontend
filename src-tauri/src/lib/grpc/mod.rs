@@ -3,6 +3,8 @@ use std::{sync::MutexGuard, time::Duration};
 use tauri::{AppHandle, Manager};
 use tonic::transport::{channel, Channel};
 
+use crate::lib::events::EventFenceError;
+
 use self::fence::{fence_manager_client::FenceManagerClient, ConfigResponse};
 
 use super::state::{FenceState, State};
@@ -70,8 +72,19 @@ pub async fn connect_client(
                     return Some(clone);
                 }
                 Err(e) => {
-                    println!("error connecting: {:?}", e);
+                    println!("error connecting 1: {:?}", e);
                     println!("{}", e.to_string());
+                    &app_handle.emit_all("grpc-disconnected", {});
+                    &app_handle.emit_all(
+                        "fence-error",
+                        EventFenceError {
+                            message: "Failed to connect to ".to_string()
+                                + client_hostname
+                                + ". Reason: "
+                                + &e.to_string(),
+                            title: "Error Connecting".to_string(),
+                        },
+                    );
                     return None;
                 }
             }
