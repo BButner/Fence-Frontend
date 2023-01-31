@@ -11,15 +11,14 @@ pub async fn connect_grpc(
     state: tauri::State<'_, FenceState>,
     window: tauri::Window,
 ) -> Result<bool, ()> {
+    let mut state = state.0.lock().await;
+    state.grpc_hostname = Some(hostname.to_string());
     let client = connect_client(hostname, window.app_handle()).await;
 
     if let Some(mut client) = client {
-        let mut state = state.0.lock().await;
-
         let config = load_config(&mut client).await;
 
         state.grpc = Some(client);
-        state.grpc_hostname = Some(hostname.to_string());
 
         if let Ok(config) = config {
             state.config = Some(config);

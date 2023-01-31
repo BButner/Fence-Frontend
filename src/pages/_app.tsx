@@ -23,6 +23,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
     const unlistenDisconnected = listen(FenceEvent.GrpcDisconnected, () => {
       console.log("DISCONNECTED EVENT FIRED")
+      console.log("is this firing?")
       setConnectionState({
         ...connectionState,
         connectionState: ConnectionState.InitialConnection,

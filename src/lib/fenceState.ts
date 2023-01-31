@@ -7,7 +7,7 @@ export interface IFenceState {
 export const getState = async (): Promise<IFenceState | null> => {
   const state = await invoke<IFenceState | null>("get_state")
 
-  console.log(state)
+  console.log("state raw", state)
 
   return state
 }

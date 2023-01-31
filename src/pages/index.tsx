@@ -15,7 +15,7 @@ function App() {
 
   useEffect(() => {
     void getState().then((state) => {
-      console.log(state)
+      console.log("state", state)
       if (state.grpcHostname !== null) {
         setConnection({
           ...connection,

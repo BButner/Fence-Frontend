@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 
 import { IConfigResponse } from "../lib/config"
 import { FenceEvent } from "../lib/event"
+import { getState } from "../lib/fenceState"
 import { configAtom, connectionAtom, ConnectionState } from "../lib/state"
 import { invoke, listen } from "../lib/tauri"
 
@@ -14,11 +15,21 @@ export const ConnectionSplashScreen: React.FC = () => {
   const [connectionState, setConnectionState] = useAtom(connectionAtom)
   const [config, setConfig] = useAtom(configAtom)
 
+  useEffect(() => {
+    void getState().then((state) => {
+      if (state.grpcHostname !== null) {
+        setConnectionState({
+          ...connectionState,
+          hostname: state.grpcHostname,
+        })
+      }
+    })
+  }, [])
+
   const testConnection = async () => {
     setConnectionState({
       ...connectionState,
       connectionState: ConnectionState.Connecting,
-      hostname: connectionState.hostname,
     })
 
     void invoke("connect_grpc", { hostname: connectionState.hostname }).then((res) => {
@@ -33,6 +44,7 @@ export const ConnectionSplashScreen: React.FC = () => {
   }
 
   const setHostname = (hostname: string) => {
+    console.log("setHostname", hostname)
     setConnectionState({
       ...connectionState,
       hostname,
