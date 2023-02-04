@@ -1,11 +1,12 @@
-import { useAtomValue } from "jotai"
+import { useAtom, useAtomValue } from "jotai"
 import { useEffect, useState } from "react"
 
+import { getConfig, IConfigResponse } from "../../lib/config"
 import { configAtom } from "../../lib/state"
 import { listen } from "../../lib/tauri"
 
 export const MonitorView: React.FC = () => {
-  const config = useAtomValue(configAtom)
+  const [config, setConfig] = useAtom(configAtom)
   const [canvasWidth, setCanvasWidth] = useState<number>(0)
   const [canvasHeight, setCanvasHeight] = useState<number>(0)
   const [topOffset, setTopOffset] = useState<number>(0)
@@ -15,15 +16,7 @@ export const MonitorView: React.FC = () => {
 
   const factor = 0.1
 
-  useEffect(() => {
-    if (config === null) return
-
-    const unlisten = listen("mouse-location", (event) => {
-      // console.log(event)
-      setCursorPosition([event.payload.x - 10, event.payload.y - 10])
-    })
-
-    // get the lowest left of the monitors
+  const updateMonitors = () => {
     const lowestLeftMonitor = config.monitors.reduce((acc, monitor) => {
       return monitor.left < acc.left ? monitor : acc
     })
@@ -54,8 +47,22 @@ export const MonitorView: React.FC = () => {
     setCanvasHeight(
       (highestBottomMonitor.top + highestBottomMonitor.height + topOffset) * factor,
     )
+  }
 
-    console.log("monitors mounted")
+  useEffect(() => {
+    if (config === null) {
+      void getConfig().then((c) => {
+        console.log(c)
+        setConfig(c)
+      })
+    } else {
+      updateMonitors()
+    }
+
+    const unlisten = listen("mouse-location", (event) => {
+      // console.log(event)
+      setCursorPosition([event.payload.x - 10, event.payload.y - 10])
+    })
 
     return () => {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return

@@ -1,7 +1,12 @@
+use serde::{Deserialize, Serialize};
 use tauri::Manager;
 
 use super::{
-    grpc::{connect_client, fence::ConfigResponse, load_config},
+    grpc::{
+        connect_client,
+        fence::{ConfigResponse, Monitor},
+        load_config,
+    },
     state::{FenceState, State, StateResponse},
 };
 
@@ -31,10 +36,26 @@ pub async fn connect_grpc(
 }
 
 #[tauri::command]
-pub async fn get_config(state: tauri::State<'_, FenceState>) -> Result<Option<ConfigResponse>, ()> {
+pub async fn get_config(
+    state: tauri::State<'_, FenceState>,
+) -> Result<Option<GetConfigResponse>, ()> {
     let state = state.0.lock().await;
 
-    Ok(state.config.clone())
+    if let Some(config) = &state.config {
+        return Ok(Some(GetConfigResponse {
+            lock_by_default: config.lock_by_default,
+            monitors: config.monitors.clone(),
+        }));
+    } else {
+        return Ok(None);
+    }
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct GetConfigResponse {
+    #[serde(rename(serialize = "lockByDefault"))]
+    lock_by_default: bool,
+    monitors: Vec<Monitor>,
 }
 
 #[tauri::command]

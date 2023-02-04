@@ -1,6 +1,7 @@
 import { ArrowPathIcon, BoltIcon, BoltSlashIcon } from "@heroicons/react/24/solid"
 import clsx from "clsx"
 import { useAtomValue } from "jotai"
+import { useEffect } from "react"
 
 import { connectionAtom, ConnectionState } from "../../lib/state"
 import styles from "./ConnectionStatus.module.scss"
@@ -8,10 +9,17 @@ import styles from "./ConnectionStatus.module.scss"
 export const ConnectionStatus: React.FC = () => {
   const connectionState = useAtomValue(connectionAtom)
 
+  useEffect(() => {
+    console.log("connectionState instatus", connectionState)
+  }, [connectionState, connectionState.hostname])
+
   const cleanHostname = (hostname: string) => {
+    console.log("cleanHostname", hostname)
     const url = new URL(hostname)
     return url.hostname
   }
+
+  if (connectionState.hostname === "") return <p>no hostname</p>
 
   return (
     <button
