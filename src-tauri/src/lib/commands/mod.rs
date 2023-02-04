@@ -3,7 +3,7 @@ use tauri::Manager;
 
 use super::{
     grpc::{
-        connect_client,
+        connect_client, disconnect_grpc,
         fence::{ConfigResponse, Monitor},
         load_config,
     },
@@ -33,6 +33,15 @@ pub async fn connect_grpc(
     }
 
     Ok(false)
+}
+
+#[tauri::command]
+pub async fn disconnect(
+    state: tauri::State<'_, FenceState>,
+    window: tauri::Window,
+) -> Result<(), ()> {
+    disconnect_grpc(state, window.app_handle()).await;
+    Ok(())
 }
 
 #[tauri::command]

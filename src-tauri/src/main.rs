@@ -9,7 +9,7 @@ use lib::{
 };
 use tauri::{async_runtime::Mutex, Manager};
 
-use crate::lib::commands::{connect_grpc, get_config, get_state, select_monitor};
+use crate::lib::commands::{connect_grpc, disconnect, get_config, get_state, select_monitor};
 
 pub mod lib;
 
@@ -27,6 +27,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             connect_grpc,
             get_config,
             get_state,
+            disconnect,
             select_monitor
         ])
         .run(tauri::generate_context!())

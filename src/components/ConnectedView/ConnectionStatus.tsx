@@ -4,6 +4,7 @@ import { useAtomValue } from "jotai"
 import { useEffect } from "react"
 
 import { connectionAtom, ConnectionState } from "../../lib/state"
+import { invoke } from "../../lib/tauri"
 import styles from "./ConnectionStatus.module.scss"
 
 export const ConnectionStatus: React.FC = () => {
@@ -14,10 +15,15 @@ export const ConnectionStatus: React.FC = () => {
     return url.hostname
   }
 
+  const disconnect = () => {
+    void invoke("disconnect")
+  }
+
   if (connectionState.hostname === "") return <p>no hostname</p>
 
   return (
     <button
+      onClick={disconnect}
       className={clsx(
         styles.connectionStatusButton,
         "fixed bottom-4 left-4 flex items-center overflow-hidden rounded p-0 shadow-xl",

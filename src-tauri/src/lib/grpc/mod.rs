@@ -122,6 +122,27 @@ pub async fn select_monitor(
     Ok(response.into_inner())
 }
 
+pub async fn disconnect_grpc(state: tauri::State<'_, FenceState>, app_handle: AppHandle) {
+    unsafe {
+        if let Some(cursor_loop_handle) = &CURSOR_LOOP_HANDLE {
+            cursor_loop_handle.abort();
+        }
+
+        if let Some(heartbeat_loop_handle) = &HEARTBEAT_LOOP_HANDLE {
+            heartbeat_loop_handle.abort();
+        }
+
+        CURSOR_LOOP_HANDLE = None;
+        HEARTBEAT_LOOP_HANDLE = None;
+
+        let mut state = state.0.lock().await;
+        state.grpc = None;
+        state.grpc_hostname = None;
+
+        &app_handle.emit_all("grpc-disconnected", {});
+    }
+}
+
 async fn start_mouse_listener(
     client: &mut FenceManagerClient<Channel>,
     app_handle: &mut AppHandle,
