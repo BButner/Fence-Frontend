@@ -99,7 +99,7 @@ export const MonitorView: React.FC = () => {
   }
 
   return (
-    <div className="rounded bg-gray-200 p-4">
+    <div className="rounded bg-gray-200 p-4 dark:bg-gray-600">
       <div style={{ width: canvasWidth, height: canvasHeight }} className="relative">
         {config.monitors.map((monitor, index) => {
           return (
@@ -118,9 +118,9 @@ export const MonitorView: React.FC = () => {
                 className={clsx(
                   "block h-full w-full border-2",
                   monitor.selected &&
-                    "border-green-600 bg-green-200/50 text-green-800 hover:bg-green-200",
+                    "border-green-600 bg-green-200/50 text-green-800 hover:bg-green-200 dark:bg-green-200",
                   !monitor.selected &&
-                    "border-gray-400 bg-gray-100/50 text-gray-800 hover:bg-gray-100",
+                    "border-gray-400 bg-gray-100/50 text-gray-800 hover:bg-gray-100/70",
                 )}
               >
                 <p>

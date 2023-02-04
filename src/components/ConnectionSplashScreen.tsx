@@ -65,6 +65,7 @@ export const ConnectionSplashScreen: React.FC = () => {
         placeholder="Hostname"
         className={clsx(
           "mt-1 w-96 rounded p-2 text-2xl shadow-lg outline-none transition duration-200 focus:ring-4 focus:ring-violet-400/50",
+          "dark:bg-gray-600 dark:text-white",
           connectionState.connectionState === ConnectionState.ConnectionFailed
             ? "ring-2 ring-red-400 focus:ring-4 focus:ring-red-400"
             : "",
