@@ -10,6 +10,7 @@ message Monitor {
   double width = 3;
   double height = 4;
   bool selected = 5;
+  string id = 6;
 }
 
 message CursorLocation {
@@ -26,4 +27,6 @@ service FenceManager {
   rpc GetConfig (google.protobuf.Empty) returns (ConfigResponse) {}
   rpc GetCursorLocationStream (google.protobuf.Empty) returns (stream CursorLocation) {}
   rpc GetHeartbeatStream (google.protobuf.Empty) returns (stream google.protobuf.Empty) {}
+
+  rpc ToggleMonitorSelected (Monitor) returns (Monitor) {}
 }

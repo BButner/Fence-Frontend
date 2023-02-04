@@ -9,12 +9,7 @@ import styles from "./ConnectionStatus.module.scss"
 export const ConnectionStatus: React.FC = () => {
   const connectionState = useAtomValue(connectionAtom)
 
-  useEffect(() => {
-    console.log("connectionState instatus", connectionState)
-  }, [connectionState, connectionState.hostname])
-
   const cleanHostname = (hostname: string) => {
-    console.log("cleanHostname", hostname)
     const url = new URL(hostname)
     return url.hostname
   }

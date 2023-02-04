@@ -44,7 +44,6 @@ export const ConnectionSplashScreen: React.FC = () => {
   }
 
   const setHostname = (hostname: string) => {
-    console.log("setHostname", hostname)
     setConnectionState({
       ...connectionState,
       hostname,

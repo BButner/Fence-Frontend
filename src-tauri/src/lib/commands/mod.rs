@@ -36,6 +36,24 @@ pub async fn connect_grpc(
 }
 
 #[tauri::command]
+pub async fn select_monitor(
+    monitor: Monitor,
+    state: tauri::State<'_, FenceState>,
+) -> Result<Monitor, ()> {
+    let mut state = state.0.lock().await;
+
+    if let Some(client) = &mut state.grpc {
+        let response = client.toggle_monitor_selected(monitor).await;
+
+        if let Ok(response) = response {
+            return Ok(response.into_inner());
+        }
+    }
+
+    Err(())
+}
+
+#[tauri::command]
 pub async fn get_config(
     state: tauri::State<'_, FenceState>,
 ) -> Result<Option<GetConfigResponse>, ()> {

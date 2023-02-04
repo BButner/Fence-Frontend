@@ -15,7 +15,6 @@ function App() {
 
   useEffect(() => {
     void getState().then((state) => {
-      console.log("state", state)
       if (state.grpcHostname !== null) {
         setConnection({
           ...connection,
@@ -26,7 +25,6 @@ function App() {
     })
 
     const unlisten = listen("fence-error", (e) => {
-      console.log(e)
       const payload: { message: string; title: string } = e.payload as {
         message: string
         title: string

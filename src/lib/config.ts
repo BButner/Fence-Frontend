@@ -8,6 +8,7 @@ export interface IMonitor {
   width: number
   height: number
   selected: boolean
+  id: string
 }
 
 export interface IConfigResponse {
@@ -17,8 +18,6 @@ export interface IConfigResponse {
 
 export const getConfig = async (): Promise<IConfigResponse | null> => {
   const config = await invoke<IConfigResponse | null>("get_config")
-
-  console.log(config)
 
   return config
 }

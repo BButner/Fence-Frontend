@@ -1,11 +1,14 @@
 use std::{sync::MutexGuard, time::Duration};
 
 use tauri::{AppHandle, Manager};
-use tonic::transport::{channel, Channel};
+use tonic::{
+    transport::{channel, Channel},
+    Request,
+};
 
 use crate::lib::events::EventFenceError;
 
-use self::fence::{fence_manager_client::FenceManagerClient, ConfigResponse};
+use self::fence::{fence_manager_client::FenceManagerClient, ConfigResponse, Monitor};
 
 use super::state::{FenceState, State};
 
@@ -106,6 +109,17 @@ pub async fn load_config(
     let config = client.get_config(()).await?;
 
     Ok(config.into_inner())
+}
+
+pub async fn select_monitor(
+    client: &mut FenceManagerClient<Channel>,
+    monitor: Monitor,
+) -> Result<Monitor, Box<dyn std::error::Error>> {
+    let response = client.toggle_monitor_selected(monitor).await?;
+
+    println!("response: {:?}", response);
+
+    Ok(response.into_inner())
 }
 
 async fn start_mouse_listener(

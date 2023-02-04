@@ -1,7 +1,9 @@
+import clsx from "clsx"
 import { useAtom, useAtomValue } from "jotai"
 import { useEffect, useState } from "react"
+import { toggleMonitorSelected } from "../../lib/api"
 
-import { getConfig, IConfigResponse } from "../../lib/config"
+import { getConfig, IConfigResponse, IMonitor } from "../../lib/config"
 import { configAtom } from "../../lib/state"
 import { listen } from "../../lib/tauri"
 
@@ -52,7 +54,6 @@ export const MonitorView: React.FC = () => {
   useEffect(() => {
     if (config === null) {
       void getConfig().then((c) => {
-        console.log(c)
         setConfig(c)
       })
     } else {
@@ -60,7 +61,6 @@ export const MonitorView: React.FC = () => {
     }
 
     const unlisten = listen("mouse-location", (event) => {
-      // console.log(event)
       setCursorPosition([event.payload.x - 10, event.payload.y - 10])
     })
 
@@ -70,6 +70,29 @@ export const MonitorView: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config, leftOffset, topOffset])
+
+  const selectMonitor = (monitor: IMonitor) => {
+    void toggleMonitorSelected(monitor).then((monitor) => {
+      setConfig((prev: IConfigResponse) => {
+        if (prev === null) {
+          return null
+        }
+
+        const newMonitors = prev.monitors.map((m) => {
+          if (m.id === monitor.id) {
+            return monitor
+          }
+
+          return m
+        })
+
+        return {
+          ...prev,
+          monitors: newMonitors,
+        }
+      })
+    })
+  }
 
   if (!config) {
     return <p>Config null...</p>
@@ -90,7 +113,16 @@ export const MonitorView: React.FC = () => {
               }}
               className="absolute p-0.5"
             >
-              <button className="block h-full w-full border-2 border-sky-600 bg-sky-200/50 text-sky-800 hover:bg-sky-200">
+              <button
+                onClick={() => selectMonitor(monitor)}
+                className={clsx(
+                  "block h-full w-full border-2",
+                  monitor.selected &&
+                    "border-green-600 bg-green-200/50 text-green-800 hover:bg-green-200",
+                  !monitor.selected &&
+                    "border-gray-400 bg-gray-100/50 text-gray-800 hover:bg-gray-100",
+                )}
+              >
                 <p>
                   {monitor.width}x{monitor.height}
                 </p>
